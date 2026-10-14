@@ -1,0 +1,14 @@
+{
+  "columns": {},
+  "types": {
+    "Taxi": "TAXI",
+    "Meals": "MEALS",
+    "Airfare": "AIR",
+    "Hotel": "ACCOM",
+    "Parking": "PARKING",
+    "Business Meals (attendees)": "ENT-CLIENT",
+    "Car Mileage": "MILEAGE",
+    "Office Supplies": "SUPPLIES",
+    "Seminar/Course Fees": "TRAINING"
+  }
+}

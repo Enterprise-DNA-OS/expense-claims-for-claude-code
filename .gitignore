@@ -16,3 +16,7 @@ feeds/
 exports/
 imports/
 private-*.json
+
+# Accounting batch files and receipt images hold staff spend
+batches/
+receipts/

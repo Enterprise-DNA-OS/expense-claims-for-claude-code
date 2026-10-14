@@ -1,0 +1,6 @@
+Report ID,Employee ID,Report Name,Report Submit Date,Approval Status,Approver,Transaction Date,Expense Type,Vendor Description,Payment Type,Journal Amount,Reimbursement Currency,Tax Amount,Business Purpose,Receipt Received
+A1F3C9,BWALSH,Auckland client visits August,2026-08-29,Processed,Aroha Ngata,2026-08-21,Taxi,Auckland Co-op Taxis,Cash,48.50,NZD,6.33,Client visit Newmarket,Y
+A1F3C9,BWALSH,Auckland client visits August,2026-08-29,Processed,Aroha Ngata,2026-08-21,Meals,Ponsonby Road Bistro,Cash,36.00,NZD,4.70,Lunch between site visits,Y
+B77D20,LMORGAN,Melbourne bid meeting,2026-09-02,Paid,Kate Chen,2026-08-27,Airfare,Virgin Australia,Corporate Card,312.40,AUD,28.40,Harbour Rail bid presentation,Y
+B77D20,LMORGAN,Melbourne bid meeting,2026-09-02,Paid,Kate Chen,2026-08-27,Hotel,Ovolo South Yarra,Cash,265.00,AUD,24.09,Night before the bid,Y
+C0921E,TFRASER,September site travel,2026-10-01,Pending Approval,,2026-09-24,Parking,Secure Parking Brisbane,Cash,32.00,AUD,2.91,Logan bridge site,N

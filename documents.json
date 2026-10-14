@@ -1,11 +1,35 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "expense-report",
+    "title": "Expense claim",
+    "for_each": "select id,ref from claims where status<>'draft' order by ref",
+    "file": "ref",
+    "sections": [
+      { "title": "Claim", "sql": "select t.ref,t.person,t.entity,t.title,c.purpose,t.status,t.submitted_on,t.decided_by,t.decided_on,c.decision_note from claim_totals t join claims c using (id) where t.id=$1" },
+      { "title": "Lines", "note": "Amounts in the entity's currency, GST included. Evidence is the document held for each line.", "sql": "select spent_on,merchant,category_name as category,gl_account,currency,amount_cents,home_cents,gst_cents,paid_by,evidence,coalesce(receipt,receipt_declaration) as receipt_or_declaration from line_work where claim_id=$1 order by spent_on" },
+      { "title": "Totals", "sql": "select currency,total_cents,gst_cents,reimburse_cents from claim_totals where id=$1" },
+      { "title": "Checks", "sql": "select rule,finding from compliance_findings where ref=(select ref from claims where id=$1) or ref like (select ref from claims where id=$1)||' and %' or ref like '% and '||(select ref from claims where id=$1) order by rule" }
+    ]
+  },
+  {
+    "name": "entertainment-register",
+    "title": "Entertainment register",
+    "for_each": "select id,name from entities order by code",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      { "title": "Entertainment this year, from 1 April", "note": "Who attended and why, kept for FBT (Australia) and the 50% entertainment rules (New Zealand). Confirm treatment with your adviser.", "sql": "select spent_on,ref,person,merchant,category_name as category,attendee_count,attendees,business_purpose,home_cents as total_cents,gst_cents from line_work where entertainment and entity_id=$1 and claim_status not in ('draft','rejected') and spent_on>=make_date(extract(year from current_date - interval '3 months')::int,4,1) order by spent_on" },
+      { "title": "Totals by category", "sql": "select category_name as category,count(*)::int as lines,sum(attendee_count)::int as attendees,sum(home_cents)::bigint as total_cents,sum(gst_cents)::bigint as gst_cents from line_work where entertainment and entity_id=$1 and claim_status not in ('draft','rejected') and spent_on>=make_date(extract(year from current_date - interval '3 months')::int,4,1) group by 1 order by 1" }
+    ]
+  },
+  {
+    "name": "payment-batch",
+    "title": "Reimbursement batch",
+    "for_each": "select id,ref from batches order by exported_on,ref",
+    "file": "ref",
+    "sections": [
+      { "title": "Batch", "sql": "select b.ref,e.name as entity,b.exported_on,b.claims,e.currency,b.total_cents,b.file,b.actor from batches b join entities e on e.id=b.entity_id where b.id=$1" },
+      { "title": "Pay each person", "note": "Personal spend only. Company card spend is already paid.", "sql": "select person,count(*)::int as claims,sum(reimburse_cents)::bigint as reimburse_cents from claim_totals where batch_id=$1 group by person order by person" },
+      { "title": "Claims", "sql": "select ref,person,title,currency,total_cents,gst_cents,decided_by,decided_on from claim_totals where batch_id=$1 order by ref" }
     ]
   }
 ]

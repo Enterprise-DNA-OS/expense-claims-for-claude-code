@@ -1,14 +1,31 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Expense Claims for Claude Code: what needs attention, rendered by npm run view",
+    "title": "Expenses this week",
+    "subtitle": "Claims waiting, card charges with no claim, and what the checks found",
     "sections": [
-      {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
-      }
+      { "title": "Waiting for approval", "note": "Days waiting since the claim was submitted. The approver is the claimant's manager.", "sql": "select ref,person,approver,submitted_on,days_waiting,currency,total_cents,missing_receipts from claim_totals where status='submitted' order by days_waiting desc" },
+      { "title": "Approved, not yet batched", "sql": "select ref,person,entity,currency,total_cents,reimburse_cents,decided_by,decided_on from claim_totals where status='approved' and batch_id is null order by entity,ref" },
+      { "title": "Card charges with no claim", "sql": "select external_ref,txn_date,person,merchant,currency,amount_cents,age_days from card_work where line_id is null order by txn_date" },
+      { "title": "What the checks found", "note": "Rules and sources are in docs/compliance.md.", "sql": "select rule,ref,subject,finding from compliance_findings order by rule,ref" }
+    ]
+  },
+  {
+    "name": "tax",
+    "title": "GST and entertainment",
+    "subtitle": "GST supported by the right document, GST at risk, and the entertainment record",
+    "sections": [
+      { "title": "GST by month", "note": "At risk: the document held does not support the credit, or there is no receipt at all.", "sql": "select entity,home_currency as currency,to_char(spent_on,'YYYY-MM') as month,sum(gst_cents)::bigint as gst_cents,count(*)::int as lines from line_work where claim_status not in ('draft','rejected') and gst_cents>0 group by 1,2,3 order by 1,3 desc" },
+      { "title": "GST credits without the right document", "sql": "select rule,ref,subject,finding from compliance_findings where rule in ('EX02','EX03') order by ref" },
+      { "title": "Entertainment", "sql": "select entity,ref,person,spent_on,merchant,category_name as category,attendee_count,attendees,business_purpose,home_currency as currency,home_cents as total_cents from line_work where entertainment and claim_status not in ('draft','rejected') order by entity,spent_on" }
+    ]
+  },
+  {
+    "name": "spend",
+    "title": "Spend by team and category",
+    "sections": [
+      { "title": "Last three months", "note": "Net is the amount less GST, in each entity's own currency.", "sql": "select to_char(spent_on,'YYYY-MM') as month,entity,home_currency as currency,cost_centre,category_name as category,count(*)::int as lines,sum(home_cents-gst_cents)::bigint as net_cents,sum(home_cents)::bigint as total_cents from line_work where claim_status not in ('draft','rejected') and spent_on>=(date_trunc('month',current_date)-interval '2 months')::date group by 1,2,3,4,5 order by 1 desc,2,4" },
+      { "title": "By person", "sql": "select person,entity,currency,count(*)::int as claims,sum(total_cents)::bigint as total_cents from claim_totals where status not in ('draft','rejected') group by 1,2,3 order by 5 desc" }
     ]
   }
 ]

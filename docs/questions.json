@@ -1,0 +1,12 @@
+[
+  ["Which claims have waited more than five days for approval, and who is sitting on them?", "approvals"],
+  ["How much GST are we claiming without the tax invoice to back it?", "gst"],
+  ["Which company card charges still have no claim against them?", "card-unmatched"],
+  ["Who claimed the same taxi twice, or claimed a card charge as their own money?", "duplicates"],
+  ["Which claims were approved by the claimant, or above the approver's limit?", "compliance"],
+  ["Which client dinners have no attendee list for the entertainment record?", "entertainment"],
+  ["Who is claiming mileage above the company rate?", "compliance"],
+  ["What did each team spend on flights and accommodation over the last three months?", "spend"],
+  ["Which claims came in more than 60 days after the money was spent?", "compliance"],
+  ["What do we owe each person in the next reimbursement batch, and what is holding it?", "export-ready"]
+]
